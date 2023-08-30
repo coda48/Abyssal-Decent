@@ -1,72 +1,104 @@
 from random import randint, choice
 
-#The class for all living things
 class LivingThing():
-    #the function for the base living thing
-    def __init__(self):
-        self.name = "some name"
+    def __inti__(self):
+        self.name ='some name'
         self.health = 1
-    #the function for the tire system
+
     def tire(self):
         self.health = self.health - 2
-    #the function for the hurt system
+
     def hurt(self):
-        self.health = self.health - randint(0, self.health)
-    #the function for the heal system
+        self.health = self.health - randint(0,self.health)
+
     def heal(self):
         self.health = self.health + 1
 
-#The class for the player
 class Player(LivingThing):
-    def __init__(self, name):
+    def __inti__(self,name):
         self.name = name
         self.health = 15
         self.status = 'regular'
 
-    #the functions for the commands
-    def help(self, monster):
-        pass
+    def help(self,monster):
+        print('Your choices are:')
+        for key in Commands.keys():
+            print(key)
 
-    def stats(self, monster):
-        pass
+    def stats(self,monster):
+        print('You are', self.name)
+        print('With health of', self.health)
+        print('Your status is', self.status)
+        print(monster.name, 'health is', monster.health)
 
-    def explore(self, monster):
-        pass
+    def explore(self,monster):
+        self.heal()
+        print('Your health is now', self.health)
+        if randint(0,1) == 1:
+            print(monster.name, 'confronts you')
+            print('What do you do')
+            self.status = 'confronted'
 
-    def run(self, monster):
-        pass
+    def run(self,monster):
+        if randint(0,self.health) < randint(0,monster.health):
+            print('A monster has appeared')
+            self.stats = 'confronted'
+            self.fight(monster)
+        else:
+            self.tire()
+            monster.heal()
+            print('Your health suffered by running')
+            print('Your health is now', self.health)
 
-    def fight(self, monster):
-        pass
+    def fight(self,monster):
+        if self.status == 'confronted':
+            self.hurt()
+            monster.hurt()
+            print(monster.name,'attacks you')
+            if self.health <= 0:
+                print('You were killed by the',monster.name)
+            elif monster.health > 0:
+                print('You survived the', monster.name)
+                print('Your health is now', self.health)
+                self.status = 'regular'
+            else:
+                print('Victory! You defeated the', monster.name)
+        else:
+            print('You are safe. Not a monster in sight anywhere!')
 
-
-# class for all monsters
 class Monster(LivingThing):
-    def __init__(self, name, health):
-        self.anme = name
+    def __inti__(self,name,health):
+        self.name = name
         self.health = health
 
-#The list for all the commands
 Commands = {
-    "help": Player.help,
-    "stats": Player.stats,
-    "explore": Player.explore,
-    "run": Player.run,
-    "fight": Player.fight
+    'help': Player.help,
+    'stats': Player.stats,
+    'explore': Player.explore,
+    'run': Player.run,
+    'fight': Player.fight
 }
 
-#the input for the players chosen name
-name = input("Enter username >> ")
+name = input('What is your name? ')
 hero = Player(name)
 
-#the monsters name and stats
-goblin = Monster("Goblin",20)
-dragon = Monster("Dragon", 10)
+goblin = Monster('Goblin', 20)
+dragon = Monster('Dragon', 10)
 
-#the list of monsters
 monsters = []
-
-#adding the monsters to the list
 monsters.append(goblin)
 monsters.append(dragon)
 
+monster = choice(monsters)
+
+print(' (type help to get a list of actions) ')
+print(hero.name,'enters a dark cave, searching for adventure. you will soon face the', monster.name)
+
+while hero.health > 0 and monster.health > 0:
+    line = input('What do you want to do? >>')
+    if line in Commands.keys():
+        Commands[line](hero,monster)
+    else:
+        print(hero.name,'does not understand this suggestion.')
+
+print('Game Over')
