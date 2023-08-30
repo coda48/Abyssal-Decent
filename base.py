@@ -102,3 +102,4 @@ while hero.health > 0 and monster.health > 0:
         print(hero.name,'does not understand this suggestion.')
 
 print('Game Over')
+# hehe
