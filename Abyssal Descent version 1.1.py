@@ -144,7 +144,7 @@ while True:
         hero.health += 0
         break
     else:
-        print("Please chose on of the options")
+        print("Please choose one of the options")
 
 
 print("\nTip: type help to bring up an actions menu. \n")
