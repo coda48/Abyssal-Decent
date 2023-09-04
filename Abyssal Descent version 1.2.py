@@ -3,9 +3,6 @@
 #import the random choice for the game
 from random import randint, choice
 
-#the explore count for the story dialog. each time you explore it adds one to this count
-explore_count = 0
-
 #The class for all living things
 class LivingThing():
     #the function for the base living thing
@@ -173,15 +170,15 @@ while True:
     dif = input("Choose a difficulty: \n >> Easy (1) \n >> Normal (2) \n >> Hard (3)\n >> ")
     #if the dif (difficulty) is set to 1, to what is listed under 1. Same for 2 and 3
     if dif == "1":
-        print("You chose easy\n")
+        print(f"\nYour name is: {hero.name} \nYour difficulty: Easy\n")
         hero.health += 20
         break
     elif dif == "2":
-        print("You chose normal\n")
+        print(f"\nYour name is: {hero.name} \nYour difficulty: Normal\n")
         hero.health += 10
         break
     elif dif == "3":
-        print("You chose hard\n")
+        print(f"\nYour name is: {hero.name} \nYour difficulty: Hard\n")
         hero.health += 0
         break
     else:
@@ -226,6 +223,10 @@ monster = choice(monsters)
 
 #removes the monster from the list once chosen
 currentmonster = monsters.pop(0)
+
+
+#the explore count for the story dialog. each time you explore it adds one to this count
+explore_count = 0
 
 #prints the opening message to the game
 print(f"{hero.name} touchs town on the sea floor, their torchlight shining through the dust and silt into the mouth of a dark cave...")
