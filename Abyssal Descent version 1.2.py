@@ -1,4 +1,10 @@
+#Abyssal Descent by Joss
+
+#import the random choice for the game
 from random import randint, choice
+
+#the explore count for the story dialog. each time you explore it adds one to this count
+explore_count = 0
 
 #The class for all living things
 class LivingThing():
@@ -18,7 +24,7 @@ class LivingThing():
 
 #The class for the player
 class Player(LivingThing):
-    def __init__(self, name):
+    def __init__(self, name): 
         self.name = name
         self.health = 10
         self.rest_count = 10
@@ -43,19 +49,29 @@ class Player(LivingThing):
     #the function that moves you from around
     def explore(self, monster):
         if randint(0,2) == 1:
+            #if the current monster has the name of a monster in the list, print a special message about the monster for the story
             if monster.name == "Kraken Spawn":
-                print("While you are exploring around the entance of the cave, out of the and rushes are single tenticle... the Kranken Spawn")
+                print(f"While you are exploring around the entance of the cave, out of the shadowy crevices rushs what seems to be a singluar tenticle... the Kranken Spawn (type fight to fight the {monster.name})")
+            if monster.name == "Cursed Diver":
+                print(f"As you swim through the underwater depths of the ruinged caves, you being to find more and more interesting tressures, a golden crown here, a silver goblet there. As you are inspecting one of these objects, from out of the darkness ahead of you rises a diver like yourself... (type fight to fight the {monster.name})")
+            if monster.name == "Chasm Crawler":
+                print(f"The decent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss arms and claws stast to grab at you, you slap them off and out of the darkness limps the {monster.name}... (type fight to fight the {monster.name})")
             elif monster.name == "Kraken":
                 print("As you reach the end of the dark tunnel, your torch lights up the back wall of a huge caven. As you begin to look around, a giant tenticle slaps down next to you. Then from the darkness climbs the king of the ocean, The Kraken...")
+                #makes the status of the players confronted so it can fight
             self.status = "confronted"
         else:
+            #the heal fucntion for exploring and finding no monsters
             self.regen()
             print("Your health is now", self.health)
 
     #the function to run away from a fight
     def run(self, monster):
+        #to check if the player is in a fight
         if self.status == "Confonted":
+            #makes the players no longer in a fight
             self.status = "normal"
+            #regens the monsters health to full
             if monster.name == "Kraken Spawn":
                 monster.health = 5
             elif monster.name == "Cursed Dive":
@@ -63,27 +79,37 @@ class Player(LivingThing):
             elif monster.name == "Chasm Crawler":
                 monster.health = 10
             elif monster.name == "Kraken":
-                monster.health = 150
+                monster.health = 50
             print(f"You ran away from {monster.name}")
+        else:
+            #if the player wasnt in a fight
+            print("You cannon run if your not in a fight!")
 
     #the function that allows you to fight monsters in the game
     def fight(self, monster):
+        #allows the currentmonster var to be accesed anywhere
         global currentmonster
+        #checks if the players is confronted by a monster 
         if self.status == "confronted": 
+            #the damage dealing machinic in the fight
             self.hurt()
             monster.hurt()
             print(monster.name, "attacks you")
+            #checks if the monster killed you
             if self.health <= 0:
                 print("You were killed by", monster.name)
+            #checks if neither you or the monster were killed
             elif monster.health > 0:
                 print("You survied the attack from", monster.name)
                 print("Your health is now:", self.health)
                 print(f"The monsters health is now: {monster.health}")
+            # if you killed the monster
             else:
                 print("Victory! You defeated", monster.name)
                 currentmonster = monsters.pop(0)
                 self.status = "normal"
         else:
+            #if you are not confronted by a monster
             print("You are safe for now, no need to fight")
 
 
@@ -94,10 +120,12 @@ class Player(LivingThing):
 
     #the rest system for when you get tired
     def rest(self, monster):
+        #resets the players rest counter to 10 if they are in need of rest
         if self.rest_count == 0:
             self.rest_count = 10
             print("You have rested, you now have full stamina points")
         else:
+            #if they dont need rest
             print("You do not need to rest right now")
 
 # class for all monsters
@@ -143,20 +171,21 @@ print(" ")
 #the while loop that makes it so the player must choose a difficulty.
 while True:
     dif = input("Choose a difficulty: \n >> Easy (1) \n >> Normal (2) \n >> Hard (3)\n >> ")
-
+    #if the dif (difficulty) is set to 1, to what is listed under 1. Same for 2 and 3
     if dif == "1":
-        print("You chose easy")
+        print("You chose easy\n")
         hero.health += 20
         break
     elif dif == "2":
-        print("You chose normal")
+        print("You chose normal\n")
         hero.health += 10
         break
     elif dif == "3":
-        print("You chose hard")
+        print("You chose hard\n")
         hero.health += 0
         break
     else:
+        #if they didnt chose a difficulty
         print("Please chose on of the options")
 
 #the player must type enter for the game to start
@@ -198,9 +227,6 @@ monster = choice(monsters)
 #removes the monster from the list once chosen
 currentmonster = monsters.pop(0)
 
-#this is the4 explore count for when to run game dialogs for the story
-explore_count = 0
-
 #prints the opening message to the game
 print(f"{hero.name} touchs town on the sea floor, their torchlight shining through the dust and silt into the mouth of a dark cave...")
 
@@ -231,19 +257,14 @@ while hero.health > 0 and kraken.health > 0:
             if explore_count < 2:
                 print("As you explore the inside of the cave, creatures scuttle away from for the bright torch light into shadowy crevice in the dusty rocks. ")
             elif explore_count == 10:
-                print("As you continue down futher inot the dark cave, the cretures begin to become more restless, wary of the visitor in their home")
+                print("As you continue down futher into the dark cave, the cretures begin to become more restless, wary of the intruder in their home")
             elif explore_count == 15:
-                print("The creatues are becoming bolder and bigger. Soon they will begin to get hungry")
+                print("The cave is slowy beginging to close up and narrow again, now you can see the walls of the tunnel with your torch")
 
         elif line == "fight":
             hero.rest_count -= 1
         elif line == "retreat":
             hero.rest_count -= 1
 
-
-if hero.health > 0:
-    print("You Won! Game Over.")
-    credits()
-else:
-    print("You Lost! Game Over.")
-    credits()
+print("You Lost! Game Over.")
+credits()
