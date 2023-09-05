@@ -13,8 +13,8 @@ class LivingThing():
     def tire(self):
         self.health = self.health - 2
     #the function for the hurt system
-    def hurt(self):
-        self.health = self.health - randint(0, self.health)
+    def hurt(self, modifer=0):
+        self.health = self.health - 1 - modifer
     #the function for the heal system
     def regen(self):
         self.health = self.health + 1
@@ -47,14 +47,7 @@ class Player(LivingThing):
     def explore(self, monster):
         if randint(0,2) == 1:
             #if the current monster has the name of a monster in the list, print a special message about the monster for the story
-            if monster.name == "Kraken Spawn":
-                print(f"While you are exploring around the entance of the cave, out of the shadowy crevices rushs what seems to be a singluar tenticle... the Kranken Spawn (type fight to fight the {monster.name})")
-            if monster.name == "Cursed Diver":
-                print(f"As you swim through the underwater depths of the ruinged caves, you being to find more and more interesting tressures, a golden crown here, a silver goblet there. As you are inspecting one of these objects, from out of the darkness ahead of you rises a diver like yourself... (type fight to fight the {monster.name})")
-            if monster.name == "Chasm Crawler":
-                print(f"The decent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss arms and claws stast to grab at you, you slap them off and out of the darkness limps the {monster.name}... (type fight to fight the {monster.name})")
-            elif monster.name == "Kraken":
-                print("As you reach the end of the dark tunnel, your torch lights up the back wall of a huge caven. As you begin to look around, a giant tenticle slaps down next to you. Then from the darkness climbs the king of the ocean, The Kraken...")
+            print (monster.flavour)
                 #makes the status of the players confronted so it can fight
             self.status = "confronted"
         else:
@@ -89,7 +82,7 @@ class Player(LivingThing):
         #checks if the players is confronted by a monster 
         if self.status == "confronted": 
             #the damage dealing machinic in the fight
-            self.hurt()
+            self.hurt(monster.weapon)
             monster.hurt()
             print(monster.name, "attacks you")
             #checks if the monster killed you
@@ -127,9 +120,11 @@ class Player(LivingThing):
 
 # class for all monsters
 class Monster(LivingThing):
-    def __init__(self, name, health):
+    def __init__(self, name, health, weapon, flavour):
         self.name = name
         self.health = health
+        self.weapon = weapon
+        self.flavour = flavour
 
 #the credits for when the game ends
 def credits():
@@ -178,7 +173,7 @@ while True:
         hero.health += 10
         break
     elif dif == "3":
-        print(f"\nYour name is: {hero.name} \nYour difficulty: Hard\n")
+        print(f"\nYour name is: {hero.name} \nYour difficulty: Hard\nYour Health:")
         hero.health += 0
         break
     else:
@@ -198,16 +193,14 @@ print("\nTip: type help to bring up an actions menu. \n")
 
 
 #the monsters name and health stats
-kraken_spawn = Monster("Kraken Spawn", 5)
-cursed_diver = Monster("Cursed Diver", 10)
-chasm_crawler = Monster("Chasm Crawler", 10)
-#
-#
-#
-#
-#
-#
-kraken = Monster("Kraken", 150)
+kraken_spawn = Monster("Kraken Spawn", 5, 0,
+    "While you are exploring around the entance of the cave, out of the shadowy crevices rushs what seems to be a singluar tenticle... the Kranken Spawn (type fight to fight the Kranken Spawn)")
+cursed_diver = Monster("Cursed Diver", 10, randint(0, 5),
+    "As you swim through the underwater depths of the ruinged caves, you being to find more and more interesting tressures, a golden crown here, a silver goblet there. As you are inspecting one of these objects, from out of the darkness ahead of you rises a diver like yourself... (type fight to fight the Cursed Diver)")
+chasm_crawler = Monster("Chasm Crawler", 10, randint(9, 15),
+    "The decent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss arms and claws stast to grab at you, you slap them off and out of the darkness limps the Chasm Crawler... (type fight to fight the Chasm Crawler)")
+kraken = Monster("Kraken", 150, randint(30, 40), 
+    "As you reach the end of the dark tunnel, your torch lights up the back wall of a huge caven. As you begin to look around, a giant tenticle slaps down next to you. Then from the darkness climbs the king of the ocean, The Kraken...")
 
 #the list of monsters
 monsters = []
@@ -229,7 +222,7 @@ currentmonster = monsters.pop(0)
 explore_count = 0
 
 #prints the opening message to the game
-print(f"{hero.name} touchs town on the sea floor, their torchlight shining through the dust and silt into the mouth of a dark cave...")
+print(f"{hero.name} touchs down on the sea floor, their torchlight shining through the dust and silt into the mouth of a dark cave...")
 
 #the while loop that will get an input for the game to continue
 while hero.health > 0 and kraken.health > 0:
