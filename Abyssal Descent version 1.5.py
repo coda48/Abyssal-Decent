@@ -33,8 +33,6 @@ class Player(LivingThing):
         self.armor = ""
         self.weapon = ""
         
-
-
     #the functions for the commands
     def help(self, monster):
         print(">> Help <<: Brings up the action menu")
@@ -119,7 +117,6 @@ class Player(LivingThing):
             #if you are not confronted by a monster
             print("You are safe for now, no need to fight")
 
-
     #the kill function made for testing
     def kill(self, monster):
         self.health = 0
@@ -148,13 +145,24 @@ class Item():
     def __init__(self, name, description):
         self.name = name
         self.description = description
-
+        
 class Weapon(Item):
     def __init__(self, name, description, damage):
         self.name = name
         self.description = description
         self.damage = damage
 
+class Armor(Item):
+    def __init__(self, name, buffer, description):
+        self.name = name
+        self.buffer = buffer
+        self.description = description
+
+class Potion(Item):
+    def __init__(self, name, flavour, effect):
+        self.name = name
+        self.flavour = flavour
+        self.effect = effect
 
 
 #the credits for when the game ends
@@ -163,7 +171,6 @@ def credits():
     print("▀█▀ █░█ ▄▀█ █▄░█ █▄▀ █▀   █▀▀ █▀█ █▀█   █▀█ █░░ ▄▀█ █▄█ █ █▄░█ █▀▀")
     print("░█░ █▀█ █▀█ █░▀█ █░█ ▄█   █▀░ █▄█ █▀▄   █▀▀ █▄▄ █▀█ ░█░ █ █░▀█ █▄█")
     print(" ")
-
 
 #The list for all the commands
 Commands = {
@@ -196,6 +203,7 @@ while True:
     #if the dif (difficulty) is set to 1, to what is listed under 1. Same for 2 and 3
     if dif == "1":
         print(f"\nYour name is: {hero.name} \nYour difficulty: Easy\nYour Health: {hero.health}\n")
+        #adds more health 
         hero.health += 20
         break
     elif dif == "2":
@@ -205,6 +213,7 @@ while True:
     elif dif == "3":
         print(f"\nYour name is: {hero.name} \nYour difficulty: Hard\nYour Health: {hero.health}\n")
         hero.health += 0
+        break
     else:
         #if they didnt chose a difficulty
         print("Please chose on of the options")
@@ -226,6 +235,7 @@ kraken_spawn = Monster(
     randint(1, 2),
     "While you are exploring around the entance of the cave, out of the shadowy crevices rushs what seems to be a singluar tentacle... the Kranken Spawn (type fight to fight the Kranken Spawn)"
 )
+
 cursed_diver = Monster(
     "Cursed Diver",
     10,
@@ -240,6 +250,7 @@ chasm_crawler = Monster(
     randint(9, 15),
     "The decent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss arms and claws stast to grab at you, you slap them off and out of the darkness limps the Chasm Crawler... (type fight to fight the Chasm Crawler)"
     )
+
 kraken = Monster(
     "Kraken",
     150,
@@ -263,8 +274,10 @@ monster = choice(monsters)
 #removes the monster from the list once chosen
 currentmonster = monsters.pop(0)
 
+#the weapons list
 weapons = []
 
+#the weapons name, flavour, and damage
 tentacle_sword = Weapon(
     "Tentacle Sword",
     "Dropped when the Kraken Spawn is killed, deal 1 to 3 damage",
@@ -289,8 +302,17 @@ trident = Weapon(
     randint(20,30)
 )
 
+#add the weapons to the list
+weapons.append(tentacle_sword)
+weapons.append(rusted_sword)
+weapons.append(crawler_claw)
+weapons.append(trident)
 
+#choosing a weapon
+current_weapon = choice(weapons)
 
+#removing the old weapon to the list
+current_weapon = weapons.pop
 
 #the explore count for the story dialog. each time you explore it adds one to this count
 explore_count = 0
