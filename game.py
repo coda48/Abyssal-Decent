@@ -14,8 +14,8 @@ class LivingThing():
     def tire(self):
         self.health = self.health - 2
     #the function for the hurt system
-    def hurt(self, modifer=0):
-        self.health = self.health - 0 - modifer
+    def hurt(self, modifer=0, strength=0):
+        self.health = self.health - 0 - modifer - strength
     #the function for the heal system
     def heal(self):
         self.health = self.health + randint(0,2)
@@ -33,9 +33,10 @@ class Player(LivingThing):
         self.armor = ""
         self.weapon = ""
         self.invis_count = 0
+        self.potion_effect = "none"
         
     #the functions for the commands
-    def help(self, monster):
+    def help(self, monster, strength_potion, invisibility_potion):
         print(">> Help <<: Brings up the action menu")
         print(">> Stats <<: brings up your stats")
         print(">> Explore <<: allows you to explore the world")
@@ -44,7 +45,7 @@ class Player(LivingThing):
         print(">> Rest <<: Will refill you stamina points to full")
     
     #the function that displays your player stats
-    def stats(self, monster):
+    def stats(self, monster, strength_potion, invisibility_potion):
         print(f">> Name: {self.name} <<")
         print(f">> Health: {self.health} <<")
         print(f">> Status: {self.status} <<")
@@ -53,7 +54,7 @@ class Player(LivingThing):
         print(f">> Progress to next level {self.xp_points}/{self.new_level}")
 
     #the function that moves you from around
-    def explore(self, monster):
+    def explore(self, monster, strength_potion, invisibility_potion):
         if randint(0,2) == 1:
             #if the current monster has the name of a monster in the list, print a special message about the monster for the story
             print (monster.flavour)
@@ -65,70 +66,36 @@ class Player(LivingThing):
             print("Your health is now", self.health)
 
     #the function to run away from a fight
-    def run(self, monster):
+    def run(self, monster, strength_potion, invisibility_potion):
         #to check if the player is in a fight
         if self.status == "Confonted":
             #makes the players no longer in a fight
             self.status = "normal"
             #regens the monsters health to full
-            if monster.name == "Kraken Spawn":
-                monster.health = 5
-            elif monster.name == "Cursed Dive":
-                monster.health = 10
-            elif monster.name == "Chasm Crawler":
-                monster.health = 10
-            elif monster.name == "Kraken":
-                monster.health = 50
+            monster.health = monster.maxhealth
             print(f"You ran away from {monster.name}")
         else:
             #if the player wasnt in a fight
             print("You cannon run if your not in a fight!")
 
     #the function that allows you to fight monsters in the game
-    def fight(self, monster):
+    def fight(self, monster, strength_potion, invisibility_potion):
         #allows the currentmonster var to be accesed anywhere
         global currentmonster
 
-        if self.status == "invisible":
-            print('You are invisible, the monsters cannot see you')
-            if self.weapon == "":
-                monster.hurt(randint(1,3))
-            if monster.health > 0:
-                print(f"{monster.name} survived the attack")
-                print(f"The monsters health is now: {monster.health}")
-            # if you killed the monster
-            else:
-                print("Victory! You defeated", monster.name)
-                currentmonster = monsters.pop(0)
-                self.status = "normal"
-                self.xp_points += monster.xp
-
-                while self.xp_points >= self.new_level:
-                    self.xp_level += 1
-                    self.new_level *= 2
-                    print("You leveled up!")
-    
-            self.invis_count -= 1
-            if self.invis_count <= 0:
-                self.status == "regular"
-                #regens the monsters health to full
-                if monster.name == "Kraken Spawn":
-                    monster.health = 5
-                elif monster.name == "Cursed Diver":
-                    monster.health = 10
-                elif monster.name == "Chasm Crawler":
-                    monster.health = 10
-                elif monster.name == "Kraken":
-                    monster.health = 50
-                print("Your invisibility ran out. You retreated from your current fight")
-            else:
-                pass
-
         #checks if the players is confronted by a monster
-        elif self.status == "confronted": 
+        if self.status == "confronted": 
             #the damage dealing machinic in the fight
-            self.hurt(monster.damage)
+            if self.potion_effect == "invisible":
+                print("The monster cannot hurt you, you are invisible")
+                self.invis_count -= 1
+                if self.invis_count <= 0:
+                    self.potion_effect = "none"
+                    print("Your invisibility ran out.")
+            else:
+                self.hurt(monster.damage)
             #if you don't have a weapon make its so you do 1 to 3 damage
+
             if self.weapon == "":
                 monster.hurt(randint(1,3))
             else:
@@ -145,16 +112,20 @@ class Player(LivingThing):
             # if you killed the monster
             else:
                 print("Victory! You defeated", monster.name)
+                #removes the monster from the list after it is killed
                 currentmonster = monsters.pop(0)
                 self.status = "normal"
+                #adds the monsts xp drop to your xp points
                 self.xp_points += monster.xp
 
+                #if your xp is above the level amount, level up
                 while self.xp_points >= self.new_level:
                     self.xp_level += 1
                     self.new_level *= 2
                     print("You leveled up!")
+                #drops a potion from a monsters
                 if monster.name == "Kraken Spawn":
-                    if 1 == 1:
+                    if 1 == 3:
                         print("You found a Invisibility Potion")
                         item_list.append(invisibility_potion)
 
@@ -163,12 +134,12 @@ class Player(LivingThing):
             print("You are safe for now, no need to fight")
 
     #the kill function made for testing
-    def kill(self, monster):
+    def kill(self, monster, strength_potion, invisibility_potion):
         self.health = 0
         print(f"{hero.name} committed suicide")
 
     #the rest system for when you get tired
-    def rest(self, monster):
+    def rest(self, monster, strength_potion, invisibility_potion):
         #resets the players rest counter to 10 if they are in need of rest
         if self.rest_count == 0:
             self.rest_count = 10
@@ -177,22 +148,30 @@ class Player(LivingThing):
             #if they dont need rest
             print("You do not need to rest right now")
     
-    def potion_use(invisibility_potion):
+    def use(self, monster, strength_potion, invisibility_potion):
+        i = input("Type what potion you would like to use? \n >> ")
+        if i == "invisibility potion":
             if invisibility_potion in item_list:
-                hero.invis_count = randint(3, 5)
-                print(f"You are now invisable for {hero.invis_count} turns")
-                item_list.pop(invisibility_potion)
+                self.invis_count = randint(3, 5)
+                print(f"You are now invisable for {self.invis_count} turns")
+                self.potion_effect = "invisible"
+                item_list.remove(invisibility_potion)
             else:
                 print("You dont have any Invisibility Potions")
+        elif i == "strength potion":
+            if strength_potion in item_list:
+                self.potion_effect = "strength"
 
 #class for all monsters
 class Monster(LivingThing):
-    def __init__(self, name, health, xp, damage, flavour):
+    def __init__(self, name, health, xp, damage, max_health, flavour):
         self.name = name
         self.health = health
         self.xp = xp
         self.damage = damage
+        self.max_health = max_health
         self.flavour = flavour
+        
 
 class Item():
     def __init__(self, name, description):
@@ -233,7 +212,7 @@ Commands = {
     "fight": Player.fight,
     "suicide": Player.kill,
     "rest": Player.rest,
-    "use": Player.potion_use
+    "use": Player.use
 }
 
 #the input for the players chosen name and the title screen
@@ -286,6 +265,7 @@ kraken_spawn = Monster(
     5,
     randint(1, 3),
     randint(1, 2),
+    5,
     "While you are exploring around the entance of the cave, out of the shadowy crevices rushs what seems to be a singluar tentacle... the Kranken Spawn (type fight to fight the Kranken Spawn)"
 )
 
@@ -294,6 +274,7 @@ cursed_diver = Monster(
     10,
     randint(6, 8),
     randint(0, 5),
+    10,
     "As you swim through the underwater depths of the ruinged caves, you being to find more and more interesting tressures, a golden crown here, a silver goblet there. As you are inspecting one of these objects, from out of the darkness ahead of you rises a diver like yourself... (type fight to fight the Cursed Diver)"
     )
 chasm_crawler = Monster(
@@ -301,6 +282,7 @@ chasm_crawler = Monster(
     10,
     randint(12, 15),
     randint(9, 15),
+    10,
     "The decent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss arms and claws stast to grab at you, you slap them off and out of the darkness limps the Chasm Crawler... (type fight to fight the Chasm Crawler)"
     )
 
@@ -308,7 +290,8 @@ kraken = Monster(
     "Kraken",
     150,
     0,
-    randint(30, 40), 
+    randint(30, 40),
+    150,
     "As you reach the end of the dark tunnel, your torch lights up the back wall of a huge caven. As you begin to look around, a giant tentacle slaps down next to you. Then from the darkness climbs the king of the ocean, The Kraken..."
     )
 
@@ -375,6 +358,15 @@ invisibility_potion = Potion(
     randint(3,5)
 )
 
+strength_potion = Potion(
+    "Strength Potion",
+    "This potion add damage to your attack",
+    5
+)
+
+item_list.append(invisibility_potion)
+item_list.append(strength_potion)
+
 #the explore count for the story dialog. each time you explore it adds one to this count
 explore_count = 0
 
@@ -394,7 +386,7 @@ while hero.health > 0 and kraken.health > 0:
     if hero.rest_count > 0:
         line = input("What do you want to do? \n >> ")
         if line in Commands.keys():
-            Commands[line] (hero, currentmonster)
+            Commands[line] (hero, currentmonster, strength_potion, invisibility_potion)
         else:
             #this will be printed if the command isn't in the command dictionary
             print(hero.name, "does not understand this suggestion")
