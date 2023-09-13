@@ -53,7 +53,7 @@ class Player(LivingThing):
         print(f">> Stamina points: {self.rest_count}")
         print(f">> XP level: {self.xp_level}")
         print(f">> Progress to next level: {self.xp_points}/{self.new_level}")
-        print(f">> Current Weapon: {weapon.name}")
+        print(f">> Current Weapon: {self.weapon}")
 
     # the function that moves you from around
     def explore(self, monster, strength_potion, invisibility_potion, health_potion):
@@ -71,7 +71,7 @@ class Player(LivingThing):
                 # the heal fucntion for exploring and finding no monsters
                 self.heal()
                 print("Your health is now", self.health)
-            if 1 == 1:
+            if randint(0,2) == 1:
                 print(f"You found {weapon.name}.")
                 while True:
                     i = input("Type equip to equip weapon, or ignore to leave weapon \n >> ")
