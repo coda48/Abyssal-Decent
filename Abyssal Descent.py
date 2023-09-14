@@ -577,7 +577,7 @@ weapons.append(abyssal_blade)
 
 
 # choosing a weapon
-weapon = weapons[0]
+weapon = choice(weapons)
 
 # removing the old weapon to the list
 current_weapon = weapons.pop(0)
