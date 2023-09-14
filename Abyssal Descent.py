@@ -341,7 +341,7 @@ kraken_spawn = Monster(
     randint(1, 3),
     randint(1, 2),
     5,
-    "While you are exploring around the entance of the cave, out of the shadowy crevices rushs what seems to be a singluar tentacle... the Kranken Spawn (type fight to fight the Kranken Spawn)"
+    "While you are exploring around the entrance of the cave, out of the shadowy crevices rushes what seems to be a singular tentacle... the Kraken Spawn (type fight to fight the Kraken Spawn)"
 )
 
 cursed_diver = Monster(
@@ -350,7 +350,7 @@ cursed_diver = Monster(
     randint(6, 8),
     randint(0, 5),
     10,
-    "As you swim through the underwater depths of the ruinged caves, you being to find more and more interesting tressures, a golden crown here, a silver goblet there. As you are inspecting one of these objects, from out of the darkness ahead of you rises a diver like yourself... (type fight to fight the Cursed Diver)"
+    "As you swim through the underwater depths of the ruined caves, you begin to find more and more interesting treasures, a golden crown here, a silver goblet there. As you are inspecting one of these objects, from out of the darkness ahead of you rises a diver like yourself... (type fight to fight the Cursed Diver)"
 )
 chasm_crawler = Monster(
     "Chasm Crawler",
@@ -358,7 +358,97 @@ chasm_crawler = Monster(
     randint(12, 15),
     randint(9, 15),
     10,
-    "The decent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss arms and claws stast to grab at you, you slap them off and out of the darkness limps the Chasm Crawler... (type fight to fight the Chasm Crawler)"
+    "The descent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss, arms and claws start to grab at you, you slap them off and out of the darkness limps the Chasm Crawler... (type fight to fight the Chasm Crawler)"
+)
+
+glowing_jellyfish = Monster(
+    "Glowing Jellyfish",
+    8,
+    randint(1, 2),
+    2,
+    8,
+    "The depths reveal a mesmerizing display of Glowing Jellyfish. Beware their stinging tentacles (type fight to engage)."
+)
+
+shadowy_serpent = Monster(
+    "Shadowy Serpent",
+    12,
+    randint(6, 8),
+    4,
+    12,
+    "You feel a sudden chill as the Shadowy Serpent slithers closer, ready to ambush (type fight to confront the Serpent)."
+)
+
+cursed_seaweed = Monster(
+    "Cursed Seaweed",
+    15,
+    randint(7, 9),
+    3,
+    15,
+    "A sinister tangle of Cursed Seaweed rises from the ocean floor, seeking its next prey (type fight to face the Seaweed)."
+)
+
+merman_raider = Monster(
+    "Merman Raider",
+    20,
+    randint(9, 12),
+    6,
+    20,
+    "You encounter a hostile Merman Raider, armed with a menacing trident (type fight to battle the Raider)."
+)
+
+skeletal_mariner = Monster(
+    "Skeletal Mariner",
+    25,
+    randint(12, 15),
+    7,
+    25,
+    "The ghostly visage of a Skeletal Mariner materializes before you, brandishing a rusty cutlass (type fight to confront the Mariner)."
+)
+
+abyssal_guardian = Monster(
+    "Abyssal Guardian",
+    30,
+    randint(15, 20),
+    10,
+    30,
+    "A massive, heavily armored Abyssal Guardian emerges from the depths, ready to defend its territory (type fight to challenge the Guardian)."
+)
+
+electric_eel = Monster(
+    "Electric Eel",
+    18,
+    randint(8, 12),
+    8,
+    18,
+    "An Electric Eel crackles with energy as it darts toward you, ready to shock its prey (type fight to face the Eel)."
+)
+
+lurking_leviathan = Monster(
+    "Lurking Leviathan",
+    50,
+    randint(25, 30),
+    15,
+    50,
+    "A colossal Lurking Leviathan rises from the abyssal depths, its presence sending shockwaves through the water (type fight to confront the Leviathan)."
+)
+
+giant_clam = Monster(
+    "Giant Clam",
+    15,
+    randint(5, 8),
+    5,
+    15,
+    "A Giant Clam opens wide, revealing rows of razor-sharp teeth within. It lunges forward to snap shut (type fight to battle the Clam)."
+)
+
+murky_octopus = Monster(
+    "Murky Octopus",
+    25,
+    randint(10, 15),
+    12,
+    25,
+    "A Murky Octopus with long, twisting tentacles approaches menacingly, ready to ensnare its prey (type fight to face the Octopus)."
 )
 
 kraken = Monster(
@@ -367,7 +457,7 @@ kraken = Monster(
     0,
     randint(30, 40),
     150,
-    "As you reach the end of the dark tunnel, your torch lights up the back wall of a huge caven. As you begin to look around, a giant tentacle slaps down next to you. Then from the darkness climbs the king of the ocean, The Kraken..."
+    "As you reach the end of the dark tunnel, your torch lights up the back wall of a huge cave. As you begin to look around, a giant tentacle slaps down next to you. Then from the darkness climbs the king of the ocean, The Kraken..."
 )
 
 # the list of monsters
@@ -377,6 +467,16 @@ monsters = []
 monsters.append(kraken_spawn)
 monsters.append(cursed_diver)
 monsters.append(chasm_crawler)
+monsters.append(glowing_jellyfish)
+monsters.append(shadowy_serpent)
+monsters.append(cursed_seaweed)
+monsters.append(merman_raider)
+monsters.append(skeletal_mariner)
+monsters.append(abyssal_guardian)
+monsters.append(electric_eel)
+monsters.append(lurking_leviathan)
+monsters.append(giant_clam)
+monsters.append(murky_octopus)
 monsters.append(kraken)
 
 # choosing the monster from the list
@@ -385,10 +485,7 @@ monster = choice(monsters)
 # removes the monster from the list once chosen
 currentmonster = monsters.pop(0)
 
-# the weapons list
-weapons = []
-
-# the weapons name, flavour, and damage
+# the weapons name, flavor, and damage
 tentacle_sword = Weapon(
     "Tentacle Sword",
     "Dropped when the Kraken Spawn is killed, deal 1 to 3 damage",
@@ -397,7 +494,7 @@ tentacle_sword = Weapon(
 
 rusted_sword = Weapon(
     "Rusted Sword",
-    "May be dropped when you kill the Cursed Driver, deals 2 to five damage",
+    "May be dropped when you kill the Cursed Diver, deals 2 to five damage",
     randint(2, 5)
 )
 
@@ -413,11 +510,71 @@ trident = Weapon(
     randint(20, 30)
 )
 
+coral_dagger = Weapon(
+    "Coral Dagger",
+    "A sharp dagger crafted from razor-sharp coral fragments, deals 3 to 6 damage",
+    randint(3, 6)
+)
+
+shark_tooth_spear = Weapon(
+    "Shark Tooth Spear",
+    "A menacing spear tipped with deadly shark teeth, deals 5 to 8 damage",
+    randint(5, 8)
+)
+
+trident_of_the_abyss = Weapon(
+    "Trident of the Abyss",
+    "A mystical trident that harnesses the power of the abyss, deals 15 to 25 damage",
+    randint(15, 25)
+)
+
+seaweed_whip = Weapon(
+    "Seaweed Whip",
+    "A flexible whip made of cursed seaweed, deals 8 to 12 damage",
+    randint(8, 12)
+)
+
+barnacle_hammer = Weapon(
+    "Barnacle Hammer",
+    "A heavy hammer encrusted with sharp barnacles, deals 10 to 15 damage",
+    randint(10, 15)
+)
+
+deep_sea_axe = Weapon(
+    "Deep Sea Axe",
+    "A formidable axe forged in the depths, deals 12 to 20 damage",
+    randint(12, 20)
+)
+
+sirens_songblade = Weapon(
+    "Siren's Songblade",
+    "A beautiful but deadly sword enchanted with the haunting melody of sirens, deals 18 to 28 damage",
+    randint(18, 28)
+)
+
+abyssal_blade = Weapon(
+    "Abyssal Blade",
+    "The ultimate weapon forged from the essence of the abyss, deals 30 to 40 damage",
+    randint(30, 40)
+)
+
+# the weapons list
+weapons = []
+
 # add the weapons to the list
 weapons.append(tentacle_sword)
 weapons.append(rusted_sword)
 weapons.append(crawler_claw)
 weapons.append(trident)
+weapons.append(coral_dagger)
+weapons.append(shark_tooth_spear)
+weapons.append(trident_of_the_abyss)
+weapons.append(seaweed_whip)
+weapons.append(barnacle_hammer)
+weapons.append(deep_sea_axe)
+weapons.append(sirens_songblade)
+weapons.append(abyssal_blade)
+
 
 # choosing a weapon
 weapon = weapons[0]
