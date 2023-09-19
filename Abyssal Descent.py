@@ -23,7 +23,7 @@ class Player(LivingThing):
     def __init__(self, name):
         self.name = name
         self.buffer = 0
-        self.health = 10 + self.buffer
+        self.health = 10
         self.full_health = 10
         self.rest_count = 10
         self.status = "normal"
@@ -37,9 +37,6 @@ class Player(LivingThing):
         self.potion_effect = "none"
         self.armor_find = "searching"
 
-        while self.armor != "":
-            self.buffer += current_armor.buffer
-
     # the functions for the commands
     def help(self, monster, strength_potion, invisibility_potion, health_potion):
         print(">> Help <<: Brings up the action menu")
@@ -48,6 +45,7 @@ class Player(LivingThing):
         print(">> Retreat <<: Allows you to retreat from fights")
         print(">> Fight <<: Allows you to fight monsters")
         print(">> Rest <<: Will refill you stamina points to full")
+        print(">> Use <<: Allows you to use potions")
 
     # the function that displays your player stats
     def stats(self, monster, strength_potion, invisibility_potion, health_potion):
@@ -76,49 +74,62 @@ class Player(LivingThing):
                 # the heal fucntion for exploring and finding no monsters
                 self.heal()
                 print("Your health is now", self.health)
+            #if you find a weapon
             if randint(1, 2) == 1:
                 print(f"You found {current_weapon.name}.")
+                #while loop to make sure you pick up weapon
                 while True:
+                    #asking for an input
                     i = input("Type equip to equip weapon, or ignore to leave weapon, or drop to drop your current weapon \n >> ")
                     if i == "equip":
+                        #if you dont have a weapon equipped
                         if self.weapon == "":
                             print(f"You equipped {current_weapon.name} (type drop to remove weapon)")
+                            #makes it the weapon you are holding
                             self.weapon = current_weapon.name
+                            #removes it from the list
                             current_weapon = weapons.pop(0)
+                            #breaks the loop
                             break
+                        #if you have a weapon
                         elif self.weapon != "":
                             print("You already have a weapon equipped, type drop to remove that weapon")
-                            break
+                    #if you igore the weapon, remove it from the list
                     elif i == "ignore":
                         print('You igored the weapon')
                         current_weapon = weapons.pop(0)
                         break
+                    #drops the weapon and removes it rfrom the player and the list, checks if you have a weapon to drop
                     elif i == "drop":
                         if self.weapon != "":
                             print(f"You dropped {self.weapon}, you can now pick up other weapons")
                             self.weapon = ""
-                            current_weapon = weapons.pop(0)
+                            weapons.pop(0)
                         else:
                             print("You dont have any weapon to drop")
-            
+                            break
+                    #makes you choose a weapon
                     if i != "equip" or "igore" or "drop":
                         print("Please type either equip or ignore or drop")
-        
-        
-
+    
+    #adds the potions to the player when called
     def pots(self, monster, strength_potion, invisibility_potion, health_potion):
+        #random chance of this happening
         if randint(1, 3) == 1:
+            #adds the potion to the item list
             item_list.append(invisibility_potion)
             print("you picked up an invisibility potion")
+            
         if randint(1, 4) == 1:
             item_list.append(strength_potion)
             print("You picked up a strength potion")
+            
         if randint(1, 2) == 1:
             item_list.append(health_potion)
             print("you picked up a health potion")
 
     # the function to run away from a fight
-    def run(self, monster, strength_potion, invisibility_potion, health_potion):
+    def retreat(self, monster, strength_potion, invisibility_potion, health_potion):
         # to check if the player is in a fight
         if self.status == "confronted":
             # makes the players no longer in a fight
@@ -134,71 +145,81 @@ class Player(LivingThing):
     def fight(self, monster, strength_potion, invisibility_potion, health_potion):
         # allows the currentmonster var to be accesed anywhere
         global currentmonster
+        #makes it so the armor var can be editored
         global current_armor
 
         # checks if the players is confronted by a monster
         if self.status == "confronted":
-            # the damage dealing machinic in the fight
+                # the damage dealing machinic in the fight
                 self.hurt(monster.damage)
-            # if you don't have a weapon make its so you do 1 to 3 damage
+                # if you don't have a weapon make its so you do 1 to 3 damage
                 if self.weapon == "":
                     monster.hurt(randint(1, 3))
                 else:
                     monster.hurt(current_weapon.damage)
-                # if you have a strength potion
+                    # if you have a strength potion
                     if self.potion_effect == "strength":
                         monster.hurt(strength_potion.damage)
                         self.strength_count -= 1
 
                 print(monster.name, "attacks you")
-            # checks if the monster killed you
+                # checks if the monster killed you
                 if self.health <= 0:
                     print("You were killed by", monster.name)
-            # checks if neither you or the monster were killed
+
+                # checks if neither you or the monster were killed
                 elif monster.health > 0:
                     print("You survied the attack from", monster.name)
                     print("Your health is now:", self.health)
                     print(f"The monsters health is now: {monster.health}")
-            # if you killed the monster
+
+                # if you killed the monster
                 else:
                     print("Victory! You defeated", monster.name)
-                # removes the monster from the list after it is killed
+                    # removes the monster from the list after it is killed
                     currentmonster = monsters.pop(0)
                     self.status = "normal"
-                # adds the monsts xp drop to your xp points
+                    # adds the monsts xp drop to your xp points
                     self.xp_points += monster.xp
 
-                # if your xp is above the level amount, level up
+                    # if your xp is above the level amount, level up
                     while self.xp_points >= self.new_level:
                         self.xp_level += 1
                         self.new_level *= 2
                         print("You leveled up!")
-                # drops a potion from a monsters
+                    #adds potions to the item list
                     self.pots(monster, strength_potion, invisibility_potion, health_potion)
+                    #chance of armor being found by the player on monster death
                     if randint(1,2) == 1:
+                        #loop so that they have to choose an option
                         while True:
+                            #input for the armor
                             i = input(f"You found {current_armor.name}, type equip to pick up, or ignore to leave \n >> ")
                             if i == "equip":
                                 self.armor_find = "found"
+                                #makes it your armor
                                 self.armor = current_armor.name
                                 print(f"You equiped {current_armor.name}")
+                                #adds health to you
+                                self.health += current_weapon.buffer
+                                #removes it from the list
                                 current_armor = armors.pop(0)
                                 break
+                            #ignores the armor and removes it
                             elif i == "ignore":
                                 self.armor_find == "searching"
                                 print(f"You ignored {current_armor.name}")
                                 current_armor = armors.pop(0)
                                 break
-
-
         else:
             # if you are not confronted by a monster
             print("You are safe for now, no need to fight")
-
-    # the kill function made for testing
-    def kill(self, monster, strength_potion, invisibility_potion, health_potion):
-        self.health = 0
-        print(f"{hero.name} committed suicide")
+    
+    #the list of potions displayed
+    def potions(self, monster, strength_potion, invisibility_potion, health_potion):
+        print(">> Health Potion: Will heal you to base health")
+        print(">> Strength Potion: Give you strength")
+        print(">> Invisibility Potion: makes you invisbale")
 
     # the rest system for when you get tired
     def rest(self, monster, strength_potion, invisibility_potion, health_potion):
@@ -231,23 +252,35 @@ class Player(LivingThing):
                 else:
                     # if you dont own an Invisibility Potions
                     print("You don't have any Invisibility Potions")
+                    break
             # checks for different potion name
             elif i == "strength potion":
                 if strength_potion in item_list:
+                    #adds how long the potion is there for
                     self.strength_count = randint(3, 4)
+                    #adds to your potions effect
                     self.potion_effect = "strength"
-                    print(
-                        f"You used a {i} potion, you now have strength for {self.strength_count} turns")
+                    print(f"You used a {i} potion, you now have strength for {self.strength_count} turns")
+                    #removes it from the list
                     item_list.remove(strength_potion)
                     break
+                else:
+                    #to chatch error if no potion in item list
+                    print("You don't have any Strength Potions")
+                    break
             elif i == "health potion":
-                self.health = self.full_health
-                print(
-                    f"You used a health potion, your health is now {self.health}")
-                item_list.remove(health_potion)
-                break
+                if health_potion in item_list:
+                    #makes health full again
+                    self.health = self.full_health
+                    print(f"You used a health potion, your health is now {self.health}")
+                    #removes it from the list
+                    item_list.remove(health_potion)
+                    break
+                else:
+                    print("You don't have any Health Potions")
+                    break
             else:
-                break
+                print("You do not have that option")
 
 # class for all monsters
 class Monster(LivingThing):
@@ -286,6 +319,7 @@ class Potion(Item):
         self.flavour = flavour
         self.damage = damage
 
+#stats to displey when you die
 def final_stats():
     print(f">> Name: {hero.name}")
     print(f">> XP level: {hero.xp_level}")
@@ -298,6 +332,7 @@ def credits():
     print("▀█▀ █░█ ▄▀█ █▄░█ █▄▀ █▀   █▀▀ █▀█ █▀█   █▀█ █░░ ▄▀█ █▄█ █ █▄░█ █▀▀")
     print("░█░ █▀█ █▀█ █░▀█ █░█ ▄█   █▀░ █▄█ █▀▄   █▀▀ █▄▄ █▀█ ░█░ █ █░▀█ █▄█")
     print(" ")
+    print(">> MADE BY: JOSS <<")
 
 
 # The list for all the commands
@@ -305,11 +340,11 @@ Commands = {
     "help": Player.help,
     "stats": Player.stats,
     "explore": Player.explore,
-    "retreat": Player.run,
+    "retreat": Player.retreat,
     "fight": Player.fight,
-    "suicide": Player.kill,
     "rest": Player.rest,
-    "use": Player.use
+    "use": Player.use,
+    "potions": Player.potions
 }
 
 # the input for the players chosen name and the title screen
@@ -334,19 +369,18 @@ while True:
     if dif == "1":
         # adds more health
         hero.health += 20
+        #sets a new max health
         hero.full_health += 20
-        print(
-            f"\nYour name is: {hero.name} \nYour difficulty: Easy\nYour Health: {hero.health}\n")
+        print(f"\nYour name is: {hero.name} \nYour difficulty: Easy\nYour Health: {hero.health}\n")
+        #ends to loop
         break
     elif dif == "2":
         hero.health += 10
         hero.full_health += 10
-        print(
-            f"\nYour name is: {hero.name} \nYour difficulty: Normal\nYour Health: {hero.health}\n")
+        print(f"\nYour name is: {hero.name} \nYour difficulty: Normal\nYour Health: {hero.health}\n")
         break
     elif dif == "3":
-        print(
-            f"\nYour name is: {hero.name} \nYour difficulty: Hard\nYour Health: {hero.health}\n")
+        print(f"\nYour name is: {hero.name} \nYour difficulty: Hard\nYour Health: {hero.health}\n")
         break
     else:
         # if they didnt chose a difficulty
@@ -356,6 +390,7 @@ while True:
 while True:
     start = input("Type or press enter to start\n >> ")
     if start == "enter":
+        #ends the loop
         break
     elif start == "":
         break
@@ -390,15 +425,6 @@ chasm_crawler = Monster(
     "The descent further down the cave has led you to a tall, wide opening that even your touch light cannot reach the sides of. As you begin to slowly swim through the dark abyss, arms and claws start to grab at you, you slap them off and out of the darkness limps the Chasm Crawler... (type fight to fight the Chasm Crawler)"
 )
 
-glowing_jellyfish = Monster(
-    "Glowing Jellyfish",
-    8,
-    randint(1, 2),
-    2,
-    8,
-    "The depths reveal a mesmerizing display of Glowing Jellyfish. Beware their stinging tentacles (type fight to engage)."
-)
-
 shadowy_serpent = Monster(
     "Shadowy Serpent",
     12,
@@ -415,15 +441,6 @@ cursed_seaweed = Monster(
     3,
     15,
     "A sinister tangle of Cursed Seaweed rises from the ocean floor, seeking its next prey (type fight to face the Seaweed)."
-)
-
-merman_raider = Monster(
-    "Merman Raider",
-    20,
-    randint(9, 12),
-    6,
-    20,
-    "You encounter a hostile Merman Raider, armed with a menacing trident (type fight to battle the Raider)."
 )
 
 skeletal_mariner = Monster(
@@ -453,14 +470,6 @@ electric_eel = Monster(
     "An Electric Eel crackles with energy as it darts toward you, ready to shock its prey (type fight to face the Eel)."
 )
 
-lurking_leviathan = Monster(
-    "Lurking Leviathan",
-    50,
-    randint(25, 30),
-    15,
-    50,
-    "A colossal Lurking Leviathan rises from the abyssal depths, its presence sending shockwaves through the water (type fight to confront the Leviathan)."
-)
 
 giant_clam = Monster(
     "Giant Clam",
@@ -496,14 +505,11 @@ monsters = []
 monsters.append(kraken_spawn)
 monsters.append(cursed_diver)
 monsters.append(chasm_crawler)
-monsters.append(glowing_jellyfish)
 monsters.append(shadowy_serpent)
 monsters.append(cursed_seaweed)
-monsters.append(merman_raider)
 monsters.append(skeletal_mariner)
 monsters.append(abyssal_guardian)
 monsters.append(electric_eel)
-monsters.append(lurking_leviathan)
 monsters.append(giant_clam)
 monsters.append(murky_octopus)
 monsters.append(kraken)
@@ -557,12 +563,6 @@ trident_of_the_abyss = Weapon(
     randint(15, 25)
 )
 
-seaweed_whip = Weapon(
-    "Seaweed Whip",
-    "A flexible whip made of cursed seaweed, deals 8 to 12 damage",
-    randint(8, 12)
-)
-
 barnacle_hammer = Weapon(
     "Barnacle Hammer",
     "A heavy hammer encrusted with sharp barnacles, deals 10 to 15 damage",
@@ -576,7 +576,7 @@ deep_sea_axe = Weapon(
 )
 
 sirens_songblade = Weapon(
-    "Siren's Songblade",
+    "Siren's blade",
     "A beautiful but deadly sword enchanted with the haunting melody of sirens, deals 18 to 28 damage",
     randint(18, 28)
 )
@@ -598,7 +598,6 @@ weapons.append(trident)
 weapons.append(coral_dagger)
 weapons.append(shark_tooth_spear)
 weapons.append(trident_of_the_abyss)
-weapons.append(seaweed_whip)
 weapons.append(barnacle_hammer)
 weapons.append(deep_sea_axe)
 weapons.append(sirens_songblade)
@@ -608,12 +607,8 @@ weapons.append(abyssal_blade)
 # removing the old weapon to the list
 current_weapon = weapons.pop(0)
 
-leather_tunic = Armor(
-    "Leather Tunic",
-    1,
-    "The most basic piece of armor"
-)
 
+#the armors name, bufffer and flavour text
 jellyfish_cloak = Armor(
     "Jellyfish Cloak",
     2,
@@ -656,9 +651,10 @@ leviathans_embrace = Armor(
     "Worn only by those who have faced and survived encounters with leviathans"
 )
 
+#the armour list
 armors = []
 
-armors.append(leather_tunic)
+#adding all the armours to the list
 armors.append(jellyfish_cloak)
 armors.append(crustacean_shell_armor)
 armors.append(coral_plate_mail)
@@ -667,6 +663,7 @@ armors.append(kraken_scale_armor)
 armors.append(abyssal_wraith_robes)
 armors.append(leviathans_embrace)
 
+#choosing the armor to display
 current_armor = armors.pop(0)
 
 # the list for potions
@@ -737,3 +734,5 @@ while hero.health > 0 and kraken.health > 0:
 # rolls the credits when you die
 final_stats()
 credits()
+
+#i know that i spelt armour wrong but it was to late to fix it.
