@@ -35,7 +35,10 @@ class Player(LivingThing):
         self.invis_count = 0
         self.strength_count = 0
         self.potion_effect = "none"
-        self.weapon_find = "seaching"
+        self.armor_find = "searching"
+
+        while self.armor != "":
+            self.buffer += current_armor.buffer
 
     # the functions for the commands
     def help(self, monster, strength_potion, invisibility_potion, health_potion):
@@ -54,8 +57,8 @@ class Player(LivingThing):
         print(f">> Stamina points: {self.rest_count}")
         print(f">> XP level: {self.xp_level}")
         print(f">> Progress to next level: {self.xp_points}/{self.new_level}")
-        print(f">> Current Weapon: {self.weapon}")
-        print(f">> Armor: {current_armor.name}")
+        print(f">> Weapon: {self.weapon}")
+        print(f">> Armor: {self.armor}")
 
     # the function that moves you from around
     def explore(self, monster, strength_potion, invisibility_potion, health_potion):
@@ -73,36 +76,34 @@ class Player(LivingThing):
                 # the heal fucntion for exploring and finding no monsters
                 self.heal()
                 print("Your health is now", self.health)
-            if randint(0,2) == 1:
+            if randint(1, 2) == 1:
                 print(f"You found {current_weapon.name}.")
                 while True:
                     i = input("Type equip to equip weapon, or ignore to leave weapon, or drop to drop your current weapon \n >> ")
                     if i == "equip":
-                        if self.weapon_find != "found":
+                        if self.weapon == "":
                             print(f"You equipped {current_weapon.name} (type drop to remove weapon)")
                             self.weapon = current_weapon.name
-                            self.weapon_find = "found"
                             current_weapon = weapons.pop(0)
                             break
-                        elif self.weapon_find != "seaching":
+                        elif self.weapon != "":
                             print("You already have a weapon equipped, type drop to remove that weapon")
                             break
                     elif i == "ignore":
                         print('You igored the weapon')
-                        self.weapon_find = "seaching"
                         current_weapon = weapons.pop(0)
                         break
                     elif i == "drop":
-                        self.drop(self, monster, strength_potion, invisibility_potion, health_potion)
+                        if self.weapon != "":
+                            print(f"You dropped {self.weapon}, you can now pick up other weapons")
+                            self.weapon = ""
+                            current_weapon = weapons.pop(0)
+                        else:
+                            print("You dont have any weapon to drop")
+            
                     if i != "equip" or "igore" or "drop":
-                        print("Please type either equip or ignore")
+                        print("Please type either equip or ignore or drop")
         
-    def drop(self, monster, strength_potion, invisibility_potion, health_potion):
-        global current_weapon, weapons
-        print(f"You dropped {current_weapon.name}")
-        self.weapon = ""
-        current_weapon = weapons.pop(0)
-        self.weapon_find = "searching"
         
 
     def pots(self, monster, strength_potion, invisibility_potion, health_potion):
@@ -111,7 +112,7 @@ class Player(LivingThing):
             print("you picked up an invisibility potion")
         if randint(1, 4) == 1:
             item_list.append(strength_potion)
-            print("You picker up a strength potion")
+            print("You picked up a strength potion")
         if randint(1, 2) == 1:
             item_list.append(health_potion)
             print("you picked up a health potion")
@@ -133,6 +134,7 @@ class Player(LivingThing):
     def fight(self, monster, strength_potion, invisibility_potion, health_potion):
         # allows the currentmonster var to be accesed anywhere
         global currentmonster
+        global current_armor
 
         # checks if the players is confronted by a monster
         if self.status == "confronted":
@@ -173,12 +175,21 @@ class Player(LivingThing):
                         print("You leveled up!")
                 # drops a potion from a monsters
                     self.pots(monster, strength_potion, invisibility_potion, health_potion)
-                    if 2 == 2:
-                        print(f"You found {current_armor.name}")
-                        i = input("Type equip to equip weapon, or ignore to leave weapon, or drop to drop your current weapon \n >> ")
-                        if i == "equip":
-                            self.armor = current_armor.name
-                            self.buffer += current_armor.buffer
+                    if randint(1,2) == 1:
+                        while True:
+                            i = input(f"You found {current_armor.name}, type equip to pick up, or ignore to leave \n >> ")
+                            if i == "equip":
+                                self.armor_find = "found"
+                                self.armor = current_armor.name
+                                print(f"You equiped {current_armor.name}")
+                                current_armor = armors.pop(0)
+                                break
+                            elif i == "ignore":
+                                self.armor_find == "searching"
+                                print(f"You ignored {current_armor.name}")
+                                current_armor = armors.pop(0)
+                                break
+
 
         else:
             # if you are not confronted by a monster
@@ -279,6 +290,7 @@ def final_stats():
     print(f">> Name: {hero.name}")
     print(f">> XP level: {hero.xp_level}")
     print(f">> Weapon: {hero.weapon}")
+    print(f">> Armor: {hero.armor}")
 
 # the credits for when the game ends
 def credits():
@@ -297,8 +309,7 @@ Commands = {
     "fight": Player.fight,
     "suicide": Player.kill,
     "rest": Player.rest,
-    "use": Player.use,
-    "drop":Player.drop
+    "use": Player.use
 }
 
 # the input for the players chosen name and the title screen
@@ -594,13 +605,8 @@ weapons.append(sirens_songblade)
 weapons.append(abyssal_blade)
 
 
-# choosing a weapon
-#weapon = choice(weapons)
-
 # removing the old weapon to the list
 current_weapon = weapons.pop(0)
-
-
 
 leather_tunic = Armor(
     "Leather Tunic",
@@ -608,9 +614,58 @@ leather_tunic = Armor(
     "The most basic piece of armor"
 )
 
+jellyfish_cloak = Armor(
+    "Jellyfish Cloak",
+    2,
+    "Made from the stinging tentacles of bioluminescent jellyfish"
+)
+
+crustacean_shell_armor = Armor(
+    "Crustacean Shell Armor",
+    4,
+    "Fashioned from the shells of giant underwater crustaceans"
+)
+
+coral_plate_mail = Armor(
+    "Coral Plate Mail",
+    5,
+    "A sturdy suit made from enchanted coral plates"
+)
+
+abyssal_chainmail = Armor(
+    "Abyssal Chainmail",
+    10,
+    "Woven from dark, mysterious materials found in the abyss"
+)
+
+kraken_scale_armor = Armor(
+    "Kraken Scale Armor",
+    15,
+    "Crafted from the scales of a mighty kraken"
+)
+
+abyssal_wraith_robes = Armor(
+    "Aqua Wraith Robes",
+    22,
+    "Imbued with the essence of ancient sea spirits"
+)
+
+leviathans_embrace = Armor(
+    "Leviathan's Embrace",
+    50,
+    "Worn only by those who have faced and survived encounters with leviathans"
+)
+
 armors = []
 
 armors.append(leather_tunic)
+armors.append(jellyfish_cloak)
+armors.append(crustacean_shell_armor)
+armors.append(coral_plate_mail)
+armors.append(abyssal_chainmail)
+armors.append(kraken_scale_armor)
+armors.append(abyssal_wraith_robes)
+armors.append(leviathans_embrace)
 
 current_armor = armors.pop(0)
 
