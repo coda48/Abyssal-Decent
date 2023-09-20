@@ -39,7 +39,7 @@ class Player(LivingThing):
 
     # the functions for the commands
     def help(self, monster, strength_potion, invisibility_potion, health_potion):
-        print(">> Help <<: Brings up the action menu")
+        print(">> help <<: Brings up the action menu")
         print(">> Stats <<: brings up your stats")
         print(">> Explore <<: allows you to explore the world")
         print(">> Retreat <<: Allows you to retreat from fights")
@@ -75,12 +75,13 @@ class Player(LivingThing):
                 self.heal()
                 print("Your health is now", self.health)
             #if you find a weapon
-            if randint(1, 2) == 1:
+            if randint(1, 4) == 1:
                 print(f"You found {current_weapon.name}.")
                 #while loop to make sure you pick up weapon
                 while True:
                     #asking for an input
                     i = input("Type equip to equip weapon, or ignore to leave weapon, or drop to drop your current weapon \n >> ")
+                    i = i.lower()
                     if i == "equip":
                         #if you dont have a weapon equipped
                         if self.weapon == "":
@@ -195,13 +196,14 @@ class Player(LivingThing):
                         while True:
                             #input for the armor
                             i = input(f"You found {current_armor.name}, type equip to pick up, or ignore to leave \n >> ")
+                            i = i.lower()
                             if i == "equip":
                                 self.armor_find = "found"
                                 #makes it your armor
                                 self.armor = current_armor.name
                                 print(f"You equiped {current_armor.name}")
                                 #adds health to you
-                                self.health += current_weapon.buffer
+                                self.health += current_armor.buffer
                                 #removes it from the list
                                 current_armor = armors.pop(0)
                                 break
@@ -217,9 +219,10 @@ class Player(LivingThing):
     
     #the list of potions displayed
     def potions(self, monster, strength_potion, invisibility_potion, health_potion):
-        print(">> Health Potion: Will heal you to base health")
-        print(">> Strength Potion: Give you strength")
-        print(">> Invisibility Potion: makes you invisbale")
+        print(">> Health Potion: Will heal you to base health << You have " + str(item_list.count(health_potion)) + " Health Potions")
+        print(">> Strength Potion: Give you strength << You have " + str(item_list.count(strength_potion)) + " Strength Potions")
+        print(">> Invisibility Potion: makes you invisbale << You have " + str(item_list.count(invisibility_potion)) + " Invisibility Potions")
+        print("")
 
     # the rest system for when you get tired
     def rest(self, monster, strength_potion, invisibility_potion, health_potion):
@@ -235,7 +238,8 @@ class Player(LivingThing):
     def use(self, monster, strength_potion, invisibility_potion, health_potion):
         while True:
             # i is the varible for the input
-            i = input("Type what potion you would like to use? \n >> ")
+            i = input("(tip: type potions for a list of potions to use) \nType what potion you would like to use? \n >> ")
+            i = i.lower()
             # checks what potion that want to use
             if i == "invisibility potion":
                 # checks if the potion is in the item list
@@ -252,6 +256,7 @@ class Player(LivingThing):
                 else:
                     # if you dont own an Invisibility Potions
                     print("You don't have any Invisibility Potions")
+                    print("Type exit to return to the last options")
                     break
             # checks for different potion name
             elif i == "strength potion":
@@ -267,6 +272,7 @@ class Player(LivingThing):
                 else:
                     #to chatch error if no potion in item list
                     print("You don't have any Strength Potions")
+                    print("Type exit to return to the last options")
                     break
             elif i == "health potion":
                 if health_potion in item_list:
@@ -278,7 +284,14 @@ class Player(LivingThing):
                     break
                 else:
                     print("You don't have any Health Potions")
+                    print("Type exit to return to the last options")                    
                     break
+            elif i == "potions":
+                self.potions(monster, strength_potion, invisibility_potion, health_potion)
+                print("Type exit to return to the last options")
+            elif i == "exit":
+                print("You stopped trying to use potions")              
+                break
             else:
                 print("You do not have that option")
 
@@ -333,6 +346,7 @@ def credits():
     print("░█░ █▀█ █▀█ █░▀█ █░█ ▄█   █▀░ █▄█ █▀▄   █▀▀ █▄▄ █▀█ ░█░ █ █░▀█ █▄█")
     print(" ")
     print(">> MADE BY: JOSS <<")
+    print(">> THANKS FOR SAMSON, DEXTER, GABE, AND TIM <<")
 
 
 # The list for all the commands
@@ -363,8 +377,8 @@ print(" ")
 
 # the while loop that makes it so the player must choose a difficulty.
 while True:
-    dif = input(
-        "Choose a difficulty: \n >> Easy (1) \n >> Normal (2) \n >> Hard (3)\n >> ")
+    dif = input("Choose a difficulty: \n >> Easy (1) \n >> Normal (2) \n >> Hard (3)\n >> ")
+    dif = dif.lower()
     # if the dif (difficulty) is set to 1, to what is listed under 1. Same for 2 and 3
     if dif == "1":
         # adds more health
@@ -389,6 +403,7 @@ while True:
 # the player must type enter for the game to start
 while True:
     start = input("Type or press enter to start\n >> ")
+    start = start.lower()
     if start == "enter":
         #ends the loop
         break
@@ -707,6 +722,7 @@ while hero.health > 0 and kraken.health > 0:
     # this if checking if the command you entered is in the commands dictionary
     if hero.rest_count > 0:
         line = input("What do you want to do? \n >> ")
+        line = line.lower()
         if line in Commands.keys():
             Commands[line](hero, currentmonster, strength_potion, invisibility_potion, health_potion)
         else:
